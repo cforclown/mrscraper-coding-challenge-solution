@@ -179,7 +179,7 @@ const pageHasSelector = async (page: Page, selector: string): Promise<boolean> =
 // Function to scrape product data
 async function scrapeProductData(url: string) {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
   });
   const page = await browser.newPage();
   await page.setRequestInterception(true);
@@ -210,7 +210,6 @@ async function scrapeProductData(url: string) {
   let currentPage = 1;
   let hasNextPage = true;
   while (hasNextPage && currentPage <= MAX_PAGE_TO_CRAWL) {
-    hasNextPage = await pageHasSelector(page, NEXT_PAGE_BTN_SELECTOR);
     const itemStackHTMLContent = await extractDataFromProductPage(page);
     if(itemStackHTMLContent) {
       const currentPageProducts = await extractDataWithDeepseek(itemStackHTMLContent);
@@ -219,11 +218,16 @@ async function scrapeProductData(url: string) {
       }
     }
 
-    const nextPageBtn = await page.$(NEXT_PAGE_BTN_SELECTOR);
-    if(nextPageBtn) {
-      await nextPageBtn.click();
-      await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-      currentPage++;
+    hasNextPage = await pageHasSelector(page, NEXT_PAGE_BTN_SELECTOR);
+    if(hasNextPage) {
+      const nextPageBtn = await page.$(NEXT_PAGE_BTN_SELECTOR);
+      if(nextPageBtn) {
+        await nextPageBtn.click();
+        await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+        currentPage++;
+      } else {
+        break;
+      }
     } else {
       break;
     }
