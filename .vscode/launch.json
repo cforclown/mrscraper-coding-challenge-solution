@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug src/main.ts",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "program": "${workspaceFolder}/src/main.ts",
+      "restart": true,
+      "runtimeExecutable": "nodemon",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+  ]
+}
